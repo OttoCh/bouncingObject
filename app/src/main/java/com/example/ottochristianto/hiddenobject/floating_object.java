@@ -16,6 +16,7 @@ import com.example.ottochristianto.hiddenobject.GameActivity;
 
 import org.w3c.dom.Attr;
 
+import java.util.Dictionary;
 import java.util.Random;
 
 /**
@@ -52,12 +53,14 @@ public class floating_object extends AppCompatImageView {
         this.setImageResource(objectSprite);
         this.objectID = objectID;
         this.currentActivity = gameActivity;
+        this.setTag("floating_object");
+
         randomizeDirection();
     }
 
     private void randomizeDirection() {
         Random rand = new Random();
-        int val = rand.nextInt(1);
+        int val = rand.nextInt(2);
         if(val == 1) speedY *= -1;
         val = rand.nextInt(1);
         if(val == 1) speedX *= -1;

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="117dp"
+        android:layout_centerInParent="true"
+        android:background="@color/colorBackgroundDark">
+
+        <Button
+            android:id="@+id/RetryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="12dp"
+            android:onClick="RetryGame"
+            android:text="button message"
+            tools:text="@string/retry_button" />
+
+        <TextView
+            android:id="@+id/Message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/RetryButton"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="Win Message"
+            android:textColor="@color/White"
+            android:textSize="30sp"
+            tools:text="@string/you_win" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -8,6 +8,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,8 +51,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void randomizeSpriteCount() {
-        int randomNumb = ThreadLocalRandom.current().nextInt(0, usedSpirte.length);
-        if(randomNumb < usedSpirte.length) {
+        Random rand = new Random();
+        int randomNumb = rand.nextInt(usedSpirte.length);
+
+        if(randomNumb < usedSpirte.length && randomNumb >= 0) {
             ImageView title_icon = findViewById(R.id.title_icon);
             title_icon.setImageResource(usedSpirte[randomNumb]);
         }

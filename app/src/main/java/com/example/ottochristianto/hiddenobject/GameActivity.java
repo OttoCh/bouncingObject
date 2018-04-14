@@ -15,6 +15,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,12 +47,16 @@ public class GameActivity extends AppCompatActivity {
     };
 
     int getObject = 0;
+    int totalMistake = 0;
+    int maximumMistake = 5;
     int usedSprite[] = new int[5];
 
     final int totalBouncingObject = 6;
 
     ArrayList<ImageView> neededObject = new ArrayList<ImageView>();
     ArrayList<floating_object> floatingObject = new ArrayList<floating_object>();
+
+    View exitInflated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +68,19 @@ public class GameActivity extends AppCompatActivity {
 
     private void InitGame() {
         getObject = 0;
+        totalMistake = 0;
         populateObjectList();
         randomizeNeededObject(neededObject, existingSprite);
         spawnObject(totalBouncingObject, existingSprite);
+        //make sure object list is findable
+        untransparentNeededObject();
+    }
+
+    private void untransparentNeededObject() {
+        for(Iterator<ImageView> i = neededObject.iterator(); i.hasNext();) {
+            ImageView icon = i.next();
+            icon.setAlpha(1f);
+        }
     }
 
     private void randomizeNeededObject(ArrayList<ImageView> neededObject, int existingSprite[]) {
@@ -108,9 +125,9 @@ public class GameActivity extends AppCompatActivity {
                 constantState = context.getResources().getDrawable(pickedSprite).getConstantState();
             }
 
-            if(icon.getDrawable().getConstantState() == constantState) {
+            if(icon.getAlpha() != 0.5f && icon.getDrawable().getConstantState() == constantState) {
                 //buat agar si icon jadi transparan
-                icon.setAlpha(128);
+                icon.setAlpha(0.5f);
                 getObject++;
                 if(getObject >= neededObject.toArray().length) {
                     Thread thread = new Thread();
@@ -124,19 +141,71 @@ public class GameActivity extends AppCompatActivity {
 //                return true;
 //            }
         }
+        totalMistake++;
+        if(totalMistake>maximumMistake)
+            gameLose();
 
         return false;
     }
 
-    private void gameDone() {
-        try{
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
+    private void gameLose() {
+        neededObject.clear();
         TextView textView = findViewById(R.id.game_finish);
-        textView.setText(R.string.game_finish);
+        textView.setText(R.string.you_lose);
+
+        //lakukan pembersihan semua floating_object yg ada di scene
+        deleteAllFloatingObject((ViewGroup) findViewById(R.id.relativeLayout));
+
+        showExitBox(false);
+    }
+
+    private void deleteAllFloatingObject(ViewGroup parentLayout) {
+        //catat dulu semua yang mau dihapus
+        final int childCount = parentLayout.getChildCount();
+        View[] deleteViewList = new View[childCount];
+        int index = 0;
+        for(int i=0; i<childCount;i++) {
+            View v = parentLayout.getChildAt(i);
+            if(v.getTag() == "floating_object") {
+                //parentLayout.removeView(v);
+                deleteViewList[index] = v;
+                index++;
+            }
+        }
+
+        //hapus semuanya
+        for(int i=0; i<index; i++) {
+            parentLayout.removeView(deleteViewList[i]);
+        }
+    }
+
+    private void gameDone() {
+        neededObject.clear();
+        TextView textView = findViewById(R.id.game_finish);
+        textView.setText(R.string.you_win);
+        showExitBox(true);
+    }
+
+    private void showExitBox(boolean win) {
+        if(exitInflated == null) {
+            ViewStub viewStub = (ViewStub) findViewById(R.id.exit_box_stub);
+            viewStub.setLayoutResource(R.layout.exit_box);
+            exitInflated = viewStub.inflate();
+        }
+        else {
+            exitInflated.setVisibility(View.VISIBLE);
+        }
+
+        TextView messageText = exitInflated.findViewById(R.id.Message);
+        Button retryButton = exitInflated.findViewById(R.id.RetryButton);
+        if(win) {
+            messageText.setText(R.string.you_win);
+            retryButton.setText(R.string.continue_button);
+        }
+        else {
+            messageText.setText(R.string.you_lose);
+            retryButton.setText(R.string.retry_button);
+        }
     }
 
     private void spawnObject(int totalSpawn, int existingSprite[]) {
@@ -158,9 +227,13 @@ public class GameActivity extends AppCompatActivity {
             //floatingObject.setLayoutParams(layoutParams);
             this.floatingObject.add(floatingObject);
             relativeLayout.addView(floatingObject, layoutParams);
-
         }
     }
 
+
+    public void RetryGame(View view) {
+        exitInflated.setVisibility(View.INVISIBLE);
+        InitGame();
+    }
 
 }

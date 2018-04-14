@@ -87,14 +87,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="14dp"
-            android:layout_marginLeft="138dp"
-            android:layout_marginStart="138dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="13dp"
             android:text="Not Game Finish" />
 
 
     </RelativeLayout>
+
+    <ViewStub
+        android:id="@+id/exit_box_stub"
+        android:inflatedId="@+id/exit_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>

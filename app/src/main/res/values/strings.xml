@@ -6,4 +6,10 @@
     <string name="find_item_icon">Icon for the item needed to find</string>
     <string name="tag_key">Tag key</string>
     <string name="game_finish">Game Finish</string>
+    <string name="retry_button">Retry</string>
+    <string name="continue_button">Continue</string>
+    <string name ="finish_button">Bye</string>
+    <string name="you_win">You Win!!!</string>
+    <string name="you_lose">You Lose...</string>
+    <string name="game_finish_message">Thank you for playing!</string>
 </resources>
