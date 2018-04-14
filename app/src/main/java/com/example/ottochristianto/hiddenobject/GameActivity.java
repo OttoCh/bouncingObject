@@ -46,6 +46,8 @@ public class GameActivity extends AppCompatActivity {
     int getObject = 0;
     int usedSprite[] = new int[5];
 
+    final int totalBouncingObject = 6;
+
     ArrayList<ImageView> neededObject = new ArrayList<ImageView>();
     ArrayList<floating_object> floatingObject = new ArrayList<floating_object>();
 
@@ -61,7 +63,7 @@ public class GameActivity extends AppCompatActivity {
         getObject = 0;
         populateObjectList();
         randomizeNeededObject(neededObject, existingSprite);
-        spawnObject(6, existingSprite);
+        spawnObject(totalBouncingObject, existingSprite);
     }
 
     private void randomizeNeededObject(ArrayList<ImageView> neededObject, int existingSprite[]) {

@@ -68,7 +68,8 @@ public class floating_object extends AppCompatImageView {
         if(currentActivity != null)
         if(currentActivity.objectPickedUp(objectSprite)) {
             //jika dicari maka jalankan suatu animasi
-            this.setVisibility(GONE);
+            //this.setVisibility(GONE);
+            ((ViewGroup)this.getParent()).removeView(this);
         }
         return;
     }
@@ -113,10 +114,11 @@ public class floating_object extends AppCompatImageView {
         currentX += speedX;
         currentY += speedY;
 
-        if(currentX - getWidth() < 0 || currentX + getWidth() > parentWidth) {
+        if(currentX < 0 || currentX + getWidth() > parentWidth) {
             speedX *= -1;
         }
-        else if(currentY - getHeight() < 0 || currentY + getHeight() > parentHeight) {
+
+        if(currentY < 0 || currentY + getHeight() > parentHeight) {
             speedY *= -1;
         }
 
