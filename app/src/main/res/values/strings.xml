@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">HiddenObject</string>
+    <string name="app_title">Hidden Object</string>
+    <string name="button_newgame">New Game</string>
+    <string name="button_quitgame">Quit</string>
+    <string name="find_item_icon">Icon for the item needed to find</string>
+    <string name="tag_key">Tag key</string>
+    <string name="game_finish">Game Finish</string>
+</resources>
