@@ -57,7 +57,15 @@ public class timers_object extends AppCompatTextView {
         if(currentTime < 0) currentTime = 0;
         String writtenTime = Integer.toString(currentTime);
         if(currentTime < 10) writtenTime = "0" + writtenTime;
-        this.setText(writtenTime);
+        final String w = writtenTime;
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        setText(w);
+                    }
+                });
+        //this.setText(writtenTime);
 
         if(currentTime <=0) {
             //kirim kembali ke ui thread
@@ -69,6 +77,8 @@ public class timers_object extends AppCompatTextView {
             });
         }
     }
+
+
 
     public void SetTimer(int maxTime) {
         this.maxTime = maxTime;
