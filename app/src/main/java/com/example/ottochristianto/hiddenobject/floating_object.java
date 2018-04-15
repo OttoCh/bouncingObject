@@ -30,8 +30,8 @@ public class floating_object extends AppCompatImageView {
 
     private float speedX = 10f;
     private float speedY = 10f;
-    private float parentWidth;
-    private float parentHeight;
+    private float parentWidth = 0;
+    private float parentHeight = 0;
 
     private GameActivity currentActivity;
 
@@ -107,8 +107,10 @@ public class floating_object extends AppCompatImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        parentHeight = ((ViewGroup)this.getParent()).getHeight();
-        parentWidth = ((ViewGroup)this.getParent()).getWidth();
+        if(parentHeight == 0)
+            parentHeight = ((ViewGroup)this.getParent()).getHeight();
+        if(parentWidth == 0)
+            parentWidth = ((ViewGroup)this.getParent()).getWidth();
         canvas.save();
 
         float currentX = this.getX();

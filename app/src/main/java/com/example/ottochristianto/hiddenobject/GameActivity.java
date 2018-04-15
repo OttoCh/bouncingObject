@@ -48,15 +48,25 @@ public class GameActivity extends AppCompatActivity {
 
     int getObject = 0;
     int totalMistake = 0;
-    int maximumMistake = 5;
+    int maximumMistake = 3;
     int usedSprite[] = new int[5];
+    int usedTimeLimit = 0;
+    int totalWin = 0;
+    int maximumWin = 3;
+    boolean initial = true;
+
+    final int[] timeLimit = new int[] {
+      40, 20, 10
+    };
 
     final int totalBouncingObject = 6;
 
-    ArrayList<ImageView> neededObject = new ArrayList<ImageView>();
-    ArrayList<floating_object> floatingObject = new ArrayList<floating_object>();
+    ArrayList<ImageView> neededObject = new ArrayList<>();
+    ArrayList<floating_object> floatingObject = new ArrayList<>();
+    ArrayList<ImageView> lifeObject = new ArrayList<>();
 
     View exitInflated;
+    timers_object timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +76,33 @@ public class GameActivity extends AppCompatActivity {
         InitGame();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //stop timer)
+        timer.StopTimer();
+    }
+
     private void InitGame() {
         getObject = 0;
-        totalMistake = 0;
-        populateObjectList();
+        usedTimeLimit++;
+        if(usedTimeLimit-1 >= timeLimit.length)
+            usedTimeLimit = timeLimit.length - 1;
+        if(initial) {
+            populateObjectList();
+            populateLife();
+            initial = false;
+        }
         randomizeNeededObject(neededObject, existingSprite);
         spawnObject(totalBouncingObject, existingSprite);
         //make sure object list is findable
         untransparentNeededObject();
+
+        //start timer
+        timer = (timers_object) findViewById(R.id.timer);
+        timer.Init(this);
+        timer.SetTimer(timeLimit[usedTimeLimit-1]);
+        timer.BeginTimer();
     }
 
     private void untransparentNeededObject() {
@@ -103,6 +132,12 @@ public class GameActivity extends AppCompatActivity {
             icon.setTag(existingSprite[index], new Object());
             index++;
         }
+    }
+
+    private void populateLife() {
+        lifeObject.add((ImageView) findViewById(R.id.life_3));
+        lifeObject.add((ImageView) findViewById(R.id.life_2));
+        lifeObject.add((ImageView) findViewById(R.id.life_1));
     }
 
     private void populateObjectList() {
@@ -142,21 +177,49 @@ public class GameActivity extends AppCompatActivity {
 //            }
         }
         totalMistake++;
+        destroyHearts(totalMistake);
+
         if(totalMistake>maximumMistake)
             gameLose();
 
         return false;
     }
 
+    private void destroyHearts(int destroyHeartsNumb) {
+        if(destroyHeartsNumb > lifeObject.toArray().length) return;
+
+        for(int i=0; i<destroyHeartsNumb; i++) {
+            View life = lifeObject.get(i);
+            life.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void restoreHearts() {
+        for(int i=0; i<lifeObject.toArray().length; i++) {
+            View life = lifeObject.get(i);
+            life.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void timesUp() {
+        gameLose();
+    }
+
     private void gameLose() {
-        neededObject.clear();
-        TextView textView = findViewById(R.id.game_finish);
-        textView.setText(R.string.you_lose);
+        //neededObject.clear();
+        totalWin = 0;
+        usedTimeLimit = 0;
+
+        totalMistake = 0;
+        restoreHearts();
 
         //lakukan pembersihan semua floating_object yg ada di scene
         deleteAllFloatingObject((ViewGroup) findViewById(R.id.relativeLayout));
 
-        showExitBox(false);
+        showExitBox(R.string.you_lose, R.string.retry_button);
+
+        //stop timer
+        timer.PauseTimer();
     }
 
     private void deleteAllFloatingObject(ViewGroup parentLayout) {
@@ -175,18 +238,24 @@ public class GameActivity extends AppCompatActivity {
 
         //hapus semuanya
         for(int i=0; i<index; i++) {
-            parentLayout.removeView(deleteViewList[i]);
+             parentLayout.removeView(deleteViewList[i]);
         }
     }
 
     private void gameDone() {
-        neededObject.clear();
-        TextView textView = findViewById(R.id.game_finish);
-        textView.setText(R.string.you_win);
-        showExitBox(true);
+        //neededObject.clear();
+        totalWin++;
+
+        if(totalWin >= maximumWin)
+            showExitBox(R.string.game_finish_message, R.string.finish_button);
+        else
+            showExitBox(R.string.you_win, R.string.continue_button);
+
+        //stop timer
+        timer.PauseTimer();
     }
 
-    private void showExitBox(boolean win) {
+    private void showExitBox(int message, int buttonMessage) {
         if(exitInflated == null) {
             ViewStub viewStub = (ViewStub) findViewById(R.id.exit_box_stub);
             viewStub.setLayoutResource(R.layout.exit_box);
@@ -198,14 +267,8 @@ public class GameActivity extends AppCompatActivity {
 
         TextView messageText = exitInflated.findViewById(R.id.Message);
         Button retryButton = exitInflated.findViewById(R.id.RetryButton);
-        if(win) {
-            messageText.setText(R.string.you_win);
-            retryButton.setText(R.string.continue_button);
-        }
-        else {
-            messageText.setText(R.string.you_lose);
-            retryButton.setText(R.string.retry_button);
-        }
+        messageText.setText(message);
+        retryButton.setText(buttonMessage);
     }
 
     private void spawnObject(int totalSpawn, int existingSprite[]) {
@@ -232,6 +295,12 @@ public class GameActivity extends AppCompatActivity {
 
 
     public void RetryGame(View view) {
+        if(totalWin >= maximumWin) {
+            timer.StopTimer();
+            finish();
+            return;
+        }
+
         exitInflated.setVisibility(View.INVISIBLE);
         InitGame();
     }

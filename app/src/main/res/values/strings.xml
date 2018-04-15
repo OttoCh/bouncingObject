@@ -12,4 +12,5 @@
     <string name="you_win">You Win!!!</string>
     <string name="you_lose">You Lose...</string>
     <string name="game_finish_message">Thank you for playing!</string>
+    <string name="Email">Created by: Otto</string>
 </resources>
